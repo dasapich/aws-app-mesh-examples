@@ -28,6 +28,8 @@ cd $base_path/../../shared_stack/lambda_functions/gather_healthcheck_status && z
 cd $base_path/../../shared_stack/lambda_functions/remove_previous_canary_components && zip -r function.zip ./* > /dev/null
 cd $base_path/../../shared_stack/lambda_functions/rollbackto_previous_canary && zip -r function.zip ./* > /dev/null
 cd $base_path/../../shared_stack/lambda_functions/start_canary && zip -r function.zip ./* > /dev/null
+cd $base_path/../../shared_stack/lambda_functions/canary_testing && zip -r function.zip ./* > /dev/null
+cd $base_path/../../shared_stack/lambda_functions/testing_cleanup && zip -r function.zip ./* > /dev/null
 cd $base_path/../../shared_stack/lambda_functions/update_deployment_version && zip -r function.zip ./* > /dev/null
 echo "Successfully completed the zipping activity of the lambda code"
 

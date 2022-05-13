@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 # Default variables that were used on the blog post (you can change them to fit your needs)
-AWS_REGION=us-west-2
+AWS_REGION=ap-southeast-1
 ENVIRONMENT_NAME=ecs-blogpost
 NAMESPACE=yelb.local
 ENVOY_IMAGE=840364872350.dkr.ecr.${AWS_REGION}.amazonaws.com/aws-appmesh-envoy:v1.15.1.0-prod
@@ -10,10 +10,24 @@ BUILD_COMPUTE_TYPE=BUILD_GENERAL1_SMALL
 USE_SAMPLE_MICROSERVICES='True'
 
 # Add environment variables to bash_profile
-echo "export AWS_REGION=${AWS_REGION}" | tee -a ~/.bash_profile
-echo "export ENVIRONMENT_NAME=${ENVIRONMENT_NAME}" | tee -a ~/.bash_profile
-echo "export NAMESPACE=${NAMESPACE}" | tee -a ~/.bash_profile
-echo "export ENVOY_IMAGE=${ENVOY_IMAGE}" | tee -a ~/.bash_profile
-echo "export SHARED_STACK_NAME=${SHARED_STACK_NAME}" | tee -a ~/.bash_profile
-echo "export BUILD_COMPUTE_TYPE=${BUILD_COMPUTE_TYPE}" | tee -a ~/.bash_profile
-echo "export USE_SAMPLE_MICROSERVICES=${USE_SAMPLE_MICROSERVICES}" | tee -a ~/.bash_profile
+#echo "export AWS_REGION=${AWS_REGION}" | tee -a ~/.bash_profile
+#echo "export ENVIRONMENT_NAME=${ENVIRONMENT_NAME}" | tee -a ~/.bash_profile
+#echo "export NAMESPACE=${NAMESPACE}" | tee -a ~/.bash_profile
+#echo "export ENVOY_IMAGE=${ENVOY_IMAGE}" | tee -a ~/.bash_profile
+#echo "export SHARED_STACK_NAME=${SHARED_STACK_NAME}" | tee -a ~/.bash_profile
+#echo "export BUILD_COMPUTE_TYPE=${BUILD_COMPUTE_TYPE}" | tee -a ~/.bash_profile
+#echo "export USE_SAMPLE_MICROSERVICES=${USE_SAMPLE_MICROSERVICES}" | tee -a ~/.bash_profile
+export AWS_REGION=${AWS_REGION}
+export ENVIRONMENT_NAME=${ENVIRONMENT_NAME}
+export NAMESPACE=${NAMESPACE}
+export ENVOY_IMAGE=${ENVOY_IMAGE}
+export SHARED_STACK_NAME=${SHARED_STACK_NAME}
+export BUILD_COMPUTE_TYPE=${BUILD_COMPUTE_TYPE}
+export USE_SAMPLE_MICROSERVICES=${USE_SAMPLE_MICROSERVICES}
+echo $AWS_REGION
+echo $ENVIRONMENT_NAME
+echo $NAMESPACE
+echo $ENVOY_IMAGE
+echo $SHARED_STACK_NAME
+echo $BUILD_COMPUTE_TYPE
+echo $USE_SAMPLE_MICROSERVICES

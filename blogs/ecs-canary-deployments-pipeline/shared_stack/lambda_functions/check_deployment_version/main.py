@@ -7,26 +7,27 @@ from botocore.exceptions import ClientError
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
-SSM_CLIENT = boto3.client('ssm')
+SSM_CLIENT = boto3.client("ssm")
+
 
 def lambda_handler(event, _context):
-    """ Main handler. """
+    """Main handler."""
 
     try:
         parameter = SSM_CLIENT.get_parameter(
-            Name='{}-canary-{}-version'.format(
-                event.get('EnvironmentName'),
-                event.get('MicroserviceName')
+            Name="{}-canary-{}-version".format(
+                event.get("EnvironmentName"), event.get("MicroserviceName")
             )
         )
         return {
-            "new_version": parameter['Parameter']['Version'] + 1, "current_percentage": 0
+            "new_version": parameter["Parameter"]["Version"] + 1,
+            "current_percentage": 0,
         }
     except ClientError as ex:
-        if ex.response['Error']['Code'] == 'ParameterNotFound':
-            LOGGER.exception('Unable to find the SSM Parameter as its a first time deployment')
-            return {
-                "new_version": 1, "current_percentage": 0, "is_healthy": True
-            }
+        if ex.response["Error"]["Code"] == "ParameterNotFound":
+            LOGGER.exception(
+                "Unable to find the SSM Parameter as its a first time deployment"
+            )
+            return {"new_version": 1, "current_percentage": 0, "is_healthy": True}
         else:
             raise ex

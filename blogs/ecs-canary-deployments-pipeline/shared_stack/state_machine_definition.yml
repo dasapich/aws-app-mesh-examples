@@ -12,13 +12,55 @@
       "Type": "Task",
       "ResultPath": null,
       "OutputPath": "$",
-      "Catch": [ 
+      "Catch": [
         {
             "ErrorEquals": ["States.Timeout"],
             "Next": "Deployment Failed & Rolled-back"
         }
       ],
       "Resource": "${DeployCanaryInfrastructureArn}",
+      "Next": "Is First Deployment?"
+    },
+    "Is First Deployment?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.deployment.new_version",
+          "NumericEquals": 1,
+          "Next": "Canary & Switch traffic"
+        }
+      ],
+      "Default": "Canary Testing"
+    },
+    "Canary Testing": {
+      "Type": "Task",
+      "ResultPath": null,
+      "OutputPath": "$",
+      "Resource": "${CanaryTestingArn}",
+      "Catch": [
+        {
+            "ErrorEquals": ["Lambda.Unknown"],
+            "Next": "Rollback"
+        }
+      ],
+      "Next": "Testing Wait"
+    },
+    "Testing Wait": {
+      "Type": "Wait",
+      "Seconds": 600,
+      "Next": "Finish Testing"
+    },
+    "Finish Testing": {
+      "Type": "Task",
+      "ResultPath": null,
+      "OutputPath": "$",
+      "Resource": "${TestingCleanupArn}",
+      "Catch": [
+        {
+            "ErrorEquals": ["Lambda.Unknown"],
+            "Next": "Rollback"
+        }
+      ],
       "Next": "Canary & Switch traffic"
     },
     "Canary & Switch traffic": {
@@ -26,7 +68,7 @@
       "ResultPath": "$.canary_results",
       "OutputPath": "$",
       "Resource": "${StartCanaryArn}",
-      "Catch": [ 
+      "Catch": [
         {
             "ErrorEquals": ["Lambda.Unknown"],
             "Next": "Rollback"
@@ -128,7 +170,7 @@
       "Type": "Task",
       "ResultPath": "$.deployment.removed_oldversion",
       "OutputPath": "$",
-      "Catch": [ 
+      "Catch": [
         {
             "ErrorEquals": ["Lambda.Unknown"],
             "Next": "Cleanup of Previous Deployment components Failed"

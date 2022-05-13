@@ -4,3 +4,6 @@ examples/apps/colorapp/bin
 .DS_Store
 .idea
 .vscode
+.venv
+.vim
+function.zip

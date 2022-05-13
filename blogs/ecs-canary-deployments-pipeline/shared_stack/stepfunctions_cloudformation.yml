@@ -140,6 +140,95 @@ Resources:
         Variables:
           canaryHelperInfraTemplate: !Sub "s3://${SourceCodeBucket}/shared_stack/canary_helper.yaml"
 
+  #------ Canary Testing Lambda Function ------#
+  CanaryTestingFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: AppMeshPermissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "appmesh:Describe*"
+                  - "appmesh:List*"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "appmesh:CreateRoute"
+                  - "appmesh:UpdateRoute"
+                Resource: !Sub 'arn:aws:appmesh:${AWS::Region}:${AWS::AccountId}:mesh/${EnvironmentName}/*'
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  CanaryTestingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: "main.lambda_handler"
+      Role: !GetAtt [ CanaryTestingFunctionRole, Arn ]
+      Code:
+        S3Bucket:
+          Ref: SourceCodeBucket
+        S3Key: "shared_stack/lambda_functions/canary_testing/function.zip"
+      Runtime: "python3.8"
+      Timeout: "900"
+      MemorySize: 512
+      Environment:
+        Variables:
+          canaryHelperInfraTemplate: !Sub "s3://${SourceCodeBucket}/shared_stack/canary_helper.yaml"
+
+  #------ Canary Testing Cleanup Lambda Function ------#
+  TestingCleanupFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: AppMeshPermissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "appmesh:Describe*"
+                  - "appmesh:List*"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "appmesh:CreateRoute"
+                  - "appmesh:UpdateRoute"
+                  - "appmesh:DeleteRoute"
+                Resource: !Sub 'arn:aws:appmesh:${AWS::Region}:${AWS::AccountId}:mesh/${EnvironmentName}/*'
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  TestingCleanupFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: "main.lambda_handler"
+      Role: !GetAtt [ TestingCleanupFunctionRole, Arn ]
+      Code:
+        S3Bucket:
+          Ref: SourceCodeBucket
+        S3Key: "shared_stack/lambda_functions/testing_cleanup/function.zip"
+      Runtime: "python3.8"
+      Timeout: "900"
+      MemorySize: 512
+      Environment:
+        Variables:
+          canaryHelperInfraTemplate: !Sub "s3://${SourceCodeBucket}/shared_stack/canary_helper.yaml"
+
   #------ Remove Old Version Lambda Function with same IAM Role------#
   RemovePreviousCanaryFunctionRole:
     Type: AWS::IAM::Role
@@ -349,6 +438,8 @@ Resources:
                   - !GetAtt [ DeployCanaryInfrastructureFunction, Arn ]
                   - !GetAtt [ GatherHealthcheckStatusFunction, Arn ]
                   - !GetAtt [ StartCanaryFunction, Arn ]
+                  - !GetAtt [ CanaryTestingFunction, Arn ]
+                  - !GetAtt [ TestingCleanupFunction, Arn ]
   ECSCanaryDeployment:
     Type: AWS::StepFunctions::StateMachine
     Properties:
@@ -364,7 +455,9 @@ Resources:
         RollbackToPreviousCanaryInfrastructureFunctionArn: !GetAtt [RollbackToPreviousCanaryInfrastructureFunction, Arn ],
         GatherHealthcheckStatusArn: !GetAtt [GatherHealthcheckStatusFunction, Arn ],
         DeployCanaryInfrastructureArn: !GetAtt [DeployCanaryInfrastructureFunction, Arn],
-        StartCanaryArn: !GetAtt [StartCanaryFunction, Arn]}
+        StartCanaryArn: !GetAtt [StartCanaryFunction, Arn],
+        CanaryTestingArn: !GetAtt [CanaryTestingFunction, Arn],
+        TestingCleanupArn: !GetAtt [TestingCleanupFunction, Arn]}
       RoleArn: !GetAtt [ ECSCanaryDeploymentRole, Arn ]
 
 Outputs:
