@@ -19,14 +19,26 @@
         }
       ],
       "Resource": "${DeployCanaryInfrastructureArn}",
-      "Next": "Is First Deployment?"
+      "Next": "Skip Canary Testing?"
     },
-    "Is First Deployment?": {
+    "Skip Canary Testing?": {
       "Type": "Choice",
       "Choices": [
         {
-          "Variable": "$.deployment.new_version",
-          "NumericEquals": 1,
+          "Or": [
+            {
+              "Variable": "$.deployment.new_version",
+              "NumericEquals": 1
+            },
+            {
+              "Variable": "$.Protocol",
+              "StringMatches": "tcp*"
+            },
+            {
+              "Variable": "$.Protocol",
+              "StringMatches": "grpc*"
+            }
+          ],
           "Next": "Canary & Switch traffic"
         }
       ],

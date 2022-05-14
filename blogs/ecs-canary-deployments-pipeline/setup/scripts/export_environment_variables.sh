@@ -9,25 +9,11 @@ SHARED_STACK_NAME=${ENVIRONMENT_NAME}-deployment-stepfunctions
 BUILD_COMPUTE_TYPE=BUILD_GENERAL1_SMALL
 USE_SAMPLE_MICROSERVICES='True'
 
-# Add environment variables to bash_profile
-#echo "export AWS_REGION=${AWS_REGION}" | tee -a ~/.bash_profile
-#echo "export ENVIRONMENT_NAME=${ENVIRONMENT_NAME}" | tee -a ~/.bash_profile
-#echo "export NAMESPACE=${NAMESPACE}" | tee -a ~/.bash_profile
-#echo "export ENVOY_IMAGE=${ENVOY_IMAGE}" | tee -a ~/.bash_profile
-#echo "export SHARED_STACK_NAME=${SHARED_STACK_NAME}" | tee -a ~/.bash_profile
-#echo "export BUILD_COMPUTE_TYPE=${BUILD_COMPUTE_TYPE}" | tee -a ~/.bash_profile
-#echo "export USE_SAMPLE_MICROSERVICES=${USE_SAMPLE_MICROSERVICES}" | tee -a ~/.bash_profile
-export AWS_REGION=${AWS_REGION}
-export ENVIRONMENT_NAME=${ENVIRONMENT_NAME}
-export NAMESPACE=${NAMESPACE}
-export ENVOY_IMAGE=${ENVOY_IMAGE}
-export SHARED_STACK_NAME=${SHARED_STACK_NAME}
-export BUILD_COMPUTE_TYPE=${BUILD_COMPUTE_TYPE}
-export USE_SAMPLE_MICROSERVICES=${USE_SAMPLE_MICROSERVICES}
-echo $AWS_REGION
-echo $ENVIRONMENT_NAME
-echo $NAMESPACE
-echo $ENVOY_IMAGE
-echo $SHARED_STACK_NAME
-echo $BUILD_COMPUTE_TYPE
-echo $USE_SAMPLE_MICROSERVICES
+# Add environment variables to bash_profile.appmesh
+echo "export AWS_REGION=${AWS_REGION}" | tee -a ~/.bash_profile.appmesh
+echo "export ENVIRONMENT_NAME=${ENVIRONMENT_NAME}" | tee -a ~/.bash_profile.appmesh
+echo "export NAMESPACE=${NAMESPACE}" | tee -a ~/.bash_profile.appmesh
+echo "export ENVOY_IMAGE=${ENVOY_IMAGE}" | tee -a ~/.bash_profile.appmesh
+echo "export SHARED_STACK_NAME=${SHARED_STACK_NAME}" | tee -a ~/.bash_profile.appmesh
+echo "export BUILD_COMPUTE_TYPE=${BUILD_COMPUTE_TYPE}" | tee -a ~/.bash_profile.appmesh
+echo "export USE_SAMPLE_MICROSERVICES=${USE_SAMPLE_MICROSERVICES}" | tee -a ~/.bash_profile.appmesh

@@ -2,7 +2,7 @@
 
 set -e
 # Load environment variables
-source ~/.bash_profile
+source ~/.bash_profile.appmesh
 
 # Get the base directory path that will be used to zip the resources before uploading to S3
 base_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
@@ -39,7 +39,7 @@ cd $base_path/../../
 # Create a new S3 bucket with a random name suffix because S3 bucket names are unique
 RANDOM_STRING=$(LC_ALL=C tr -dc 'a-z' </dev/urandom | head -c 10 ; echo)
 S3_BUCKET_NAME=$(aws s3 mb s3://ecs-canary-blogpost-cloudformation-files-$RANDOM_STRING --region $AWS_REGION | cut -d' ' -f2)
-echo "export S3_BUCKET_NAME=${S3_BUCKET_NAME}" | tee -a ~/.bash_profile
+echo "export S3_BUCKET_NAME=${S3_BUCKET_NAME}" | tee -a ~/.bash_profile.appmesh
 
 # Upload the resources to the bucket created
 aws s3 cp ./ s3://$S3_BUCKET_NAME --recursive --exclude "^\." --region $AWS_REGION > /dev/null

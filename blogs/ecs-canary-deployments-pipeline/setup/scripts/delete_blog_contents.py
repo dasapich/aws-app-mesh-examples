@@ -3,6 +3,7 @@
 import os
 import time
 import boto3
+from pathlib import Path
 from botocore.exceptions import ClientError, WaiterError
 
 #Find the EnvironmentName parameter
@@ -190,6 +191,12 @@ def main():
         if stack.startswith(pattern):
             _delete_cfn_stack(stack)
             stacks_tobe_deleted.remove(stack)
+
+    #8. Delete ~/.bash_profile.appmesh
+    bash_profile = Path(Path.home(), Path('.bash_profile.appmesh'))
+    if bash_profile.exists():
+        bash_profile.unlink()
+
     print("Cleanup Done Successfully...Have a good day!")
 
 if __name__=='__main__':

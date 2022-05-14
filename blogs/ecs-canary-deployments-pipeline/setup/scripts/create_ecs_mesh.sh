@@ -2,7 +2,7 @@
 
 set -e
 
-source ~/.bash_profile
+source ~/.bash_profile.appmesh
 
 base_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
@@ -21,4 +21,4 @@ APP_URI=$(aws --region ${AWS_REGION} \
                 --stack-name ${ENVIRONMENT_NAME}-clusterresources \
                 --query "Stacks[0].Outputs[?OutputKey=='PublicLoadBalancer'].OutputValue" --output text)
 
-echo "export APP_URI=${APP_URI}" | tee -a ~/.bash_profile
+echo "export APP_URI=${APP_URI}" | tee -a ~/.bash_profile.appmesh

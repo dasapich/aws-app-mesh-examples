@@ -2,7 +2,7 @@
 
 set -e
 
-source ~/.bash_profile
+source ~/.bash_profile.appmesh
 
 base_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 

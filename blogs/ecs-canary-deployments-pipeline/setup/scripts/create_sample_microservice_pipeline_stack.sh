@@ -3,7 +3,7 @@
 set -e
 
 # Load environment variables
-source ~/.bash_profile
+source ~/.bash_profile.appmesh
 
 sample_microservices=(
     "yelb-db:5432:tcp"
