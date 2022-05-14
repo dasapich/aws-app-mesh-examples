@@ -11,7 +11,7 @@ LOGGER.setLevel(logging.INFO)
 APPMESH_CLIENT = boto3.client("appmesh")
 
 
-def _cleanup_canary_testing(event, new_vn):
+def _cleanup_canary_testing(event):
     """Function to clean up Canary Testing."""
 
     try:
@@ -30,17 +30,7 @@ def lambda_handler(event, _context):
     """Main handler."""
 
     LOGGER.info("Cleaning up canary testing")
-    route = event["Protocol"] + "Route"
-    entries = APPMESH_CLIENT.describe_route(
-        meshName=event["EnvironmentName"],
-        routeName=event["MicroserviceName"] + "-" + "route",
-        virtualRouterName=event["MicroserviceName"] + "-" + "vr",
-    )["route"]["spec"][route]["action"]["weightedTargets"]
-    print(entries)
-    for entry in entries:
-        if entry["virtualNode"].endswith(event["Sha"]):
-            new_vn = entry["virtualNode"]
-            if _cleanup_canary_testing(event, new_vn):
-                LOGGER.info("Cleaned up the Canary Testing")
-            else:
-                return {"status": "FAIL"}
+    if _cleanup_canary_testing(event):
+        LOGGER.info("Cleaned up the Canary Testing")
+    else:
+        return {"status": "FAIL"}

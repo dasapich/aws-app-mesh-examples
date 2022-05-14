@@ -11,10 +11,11 @@ LOGGER.setLevel(logging.INFO)
 APPMESH_CLIENT = boto3.client("appmesh")
 
 
-def _perform_canary_testing(event, new_vn, header_key, header_value):
+def _perform_canary_testing(event, header_key, header_value):
     """Function to perform Canary Testing."""
 
     new_vn = event["MicroserviceName"] + "-" + event["Sha"]
+    LOGGER.info("new_vn: {}".format(new_vn))
     try:
         if event["Protocol"].lower() == "http":
             spec = {
@@ -59,24 +60,19 @@ def lambda_handler(event, _context):
     """Main handler."""
 
     LOGGER.info("Setting up canary testing")
-    route = event["Protocol"] + "Route"
-    entries = APPMESH_CLIENT.describe_route(
-        meshName=event["EnvironmentName"],
-        routeName=event["MicroserviceName"] + "-" + "route",
-        virtualRouterName=event["MicroserviceName"] + "-" + "vr",
-    )["route"]["spec"][route]["action"]["weightedTargets"]
-    print(entries)
-    for entry in entries:
-        if entry["virtualNode"].endswith(event["Sha"]):
-            new_vn = entry["virtualNode"]
-            # TODO: Change to parameters in specfiles/deploy.json (hard code for now)
-            header_key = "counter_no"
-            header_value = "88888"
-            if _perform_canary_testing(event, new_vn, header_key, header_value):
-                LOGGER.info(
-                    "Performed the Canary Testing for HTTP header {} matching {}".format(
-                        header_key, header_value
-                    )
-                )
-            else:
-                return {"status": "FAIL"}
+    LOGGER.info("SHA: {}".format(event["Sha"]))
+    # TODO: Change to parameters in specfiles/deploy.json (hard code for now)
+    header_key = "counter_no"
+    header_value = "88888"
+    LOGGER.info(
+        "Canary test with header {} matching {}".format(header_key, header_value)
+    )
+    if _perform_canary_testing(event, header_key, header_value):
+        LOGGER.info(
+            "Performed the Canary Testing for HTTP header {} matching {}".format(
+                header_key, header_value
+            )
+        )
+    else:
+        return {"status": "FAIL"}
+    LOGGER.info("Setting up Canary Testing Done")
