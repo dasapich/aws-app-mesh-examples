@@ -28,6 +28,12 @@ Resources:
               Ref: ArtifactBucketRetentionDays
             Status: Enabled
 
+  #------ Deployment Testing SNS Topic ------#
+  CanaryDeploymentTestingSnSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: CanaryDeploymentTesting
+
   #------ Check Deployment Version Lambda Function ------#
   CheckDeploymentVersionFunctionRole:
     Type: AWS::IAM::Role
@@ -440,6 +446,11 @@ Resources:
                   - !GetAtt [ StartCanaryFunction, Arn ]
                   - !GetAtt [ CanaryTestingFunction, Arn ]
                   - !GetAtt [ TestingCleanupFunction, Arn ]
+              - Effect: Allow
+                Action:
+                  - "sns:Publish"
+                Resource:
+                  - Ref: CanaryDeploymentTestingSnSTopic
   ECSCanaryDeployment:
     Type: AWS::StepFunctions::StateMachine
     Properties:
@@ -457,7 +468,8 @@ Resources:
         DeployCanaryInfrastructureArn: !GetAtt [DeployCanaryInfrastructureFunction, Arn],
         StartCanaryArn: !GetAtt [StartCanaryFunction, Arn],
         CanaryTestingArn: !GetAtt [CanaryTestingFunction, Arn],
-        TestingCleanupArn: !GetAtt [TestingCleanupFunction, Arn]}
+        TestingCleanupArn: !GetAtt [TestingCleanupFunction, Arn],
+        CanaryTestingSnsTopicArn: !Ref CanaryDeploymentTestingSnSTopic}
       RoleArn: !GetAtt [ ECSCanaryDeploymentRole, Arn ]
 
 Outputs:

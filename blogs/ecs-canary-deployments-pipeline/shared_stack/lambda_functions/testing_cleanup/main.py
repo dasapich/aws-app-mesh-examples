@@ -15,11 +15,20 @@ def _cleanup_canary_testing(event):
     """Function to clean up Canary Testing."""
 
     try:
-        APPMESH_CLIENT.delete_route(
-            meshName=event["EnvironmentName"],
-            routeName=event["MicroserviceName"] + "-" + "testing-route",
-            virtualRouterName=event["MicroserviceName"] + "-" + "vr",
-        )
+        meshName = event["EnvironmentName"]
+        virtualRouterName = event["MicroserviceName"] + "-" + "vr"
+
+        routes = APPMESH_CLIENT.list_routes(
+            meshName=meshName, virtualRouterName=virtualRouterName
+        )["routes"]
+
+        for route in routes:
+            if route["routeName"].endswith("testing-route"):
+                APPMESH_CLIENT.delete_route(
+                    meshName=meshName,
+                    virtualRouterName=virtualRouterName,
+                    routeName=route["routeName"],
+                )
         return True
     except ClientError as _ex:
         LOGGER.error("Delete canary testing route failed")

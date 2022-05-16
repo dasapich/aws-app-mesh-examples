@@ -51,16 +51,48 @@
       "Resource": "${CanaryTestingArn}",
       "Catch": [
         {
-            "ErrorEquals": ["Lambda.Unknown"],
-            "Next": "Rollback"
+            "ErrorEquals": ["States.TaskFailed"],
+            "ResultPath": "$.error-info",
+            "Next": "Rollback Testing"
         }
       ],
       "Next": "Testing Wait"
     },
     "Testing Wait": {
-      "Type": "Wait",
-      "Seconds": 600,
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish.waitForTaskToken",
+      "HeartbeatSeconds": 600,
+      "ResultPath": null,
+      "OutputPath": "$",
+      "Parameters": {
+        "TopicArn": "${CanaryTestingSnsTopicArn}",
+        "Message": {
+          "Deployment.$": "$.deployment",
+          "TaskToken.$": "$$.Task.Token"
+        }
+      },
+      "Catch": [
+        {
+            "ErrorEquals": ["States.Timeout", "States.TaskFailed"],
+            "ResultPath": "$.error-info",
+            "Next": "Rollback Testing"
+        }
+      ],
       "Next": "Finish Testing"
+    },
+    "Rollback Testing": {
+      "Type": "Task",
+      "ResultPath": null,
+      "OutputPath": "$",
+      "Resource": "${TestingCleanupArn}",
+      "Catch": [
+        {
+            "ErrorEquals": ["States.TaskFailed"],
+            "ResultPath": "$.error-info",
+            "Next": "Rollback"
+        }
+      ],
+      "Next": "Rollback"
     },
     "Finish Testing": {
       "Type": "Task",
@@ -69,7 +101,8 @@
       "Resource": "${TestingCleanupArn}",
       "Catch": [
         {
-            "ErrorEquals": ["Lambda.Unknown"],
+            "ErrorEquals": ["States.TaskFailed"],
+            "ResultPath": "$.error-info",
             "Next": "Rollback"
         }
       ],

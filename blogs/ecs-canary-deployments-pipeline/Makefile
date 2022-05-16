@@ -10,15 +10,15 @@ create-ecs-mesh:
 create-monitoring-resources:
 	./setup/scripts/create_prometheus_env.sh
 
-create-shared-cloudformation-stack: 
+create-shared-cloudformation-stack:
 	./setup/scripts/create_shared_cloudformation_stack.sh
 
-create-sample-microservice-pipeline-stack: 
+create-sample-microservice-pipeline-stack:
 	./setup/scripts/create_sample_microservice_pipeline_stack.sh
 
 venv:
 	: # Create venv if it doesn't exist
-		test -d venv || python3 -m venv venv && . venv/bin/activate
+		test -d .venv || python3 -m venv .venv && source .venv/bin/activate
 
 delete-blog-contents: venv
-	sudo pip3 install -r requirements.txt && python3 ./setup/scripts/delete_blog_contents.py
+	pip3 install -r requirements.txt && source ~/.bash_profile.appmesh && python3 ./setup/scripts/delete_blog_contents.py

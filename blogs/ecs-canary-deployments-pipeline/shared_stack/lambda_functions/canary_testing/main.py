@@ -21,7 +21,7 @@ def _perform_canary_testing(event, header_key, header_value):
             spec = {
                 "httpRoute": {
                     "action": {
-                        "weightedTargets": [{"virtualNode": new_vn, "weight": 1}]
+                        "weightedTargets": [{"virtualNode": new_vn, "weight": 100}]
                     },
                     "match": {
                         "prefix": "/",
